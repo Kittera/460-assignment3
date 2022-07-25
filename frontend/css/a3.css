@@ -1,0 +1,25 @@
+.fade {
+  transition: opacity 0.4s linear;
+}
+
+.card {
+  margin: 5px;
+}
+#serviceCards {
+  width: 80%;
+  margin: 2px auto 2px auto;
+  display: flex;
+  flex-basis: 3;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+body {
+  text-align: center;
+}
+
+.omhsLawInput {
+  float: left;
+  margin: 2px auto 2px auto;
+  width: 80%;
+}

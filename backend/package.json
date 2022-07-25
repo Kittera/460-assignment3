@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Kittera/460-assignment3#readme",
   "dependencies": {
-    "express": "^4.18.1"
+    "express": "^4.18.1",
+    "nodemon": "^2.0.19"
   }
 }

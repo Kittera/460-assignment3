@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assign3 - Kittera</title>
+
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <!-- JavaScript Bundle with Popper -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/a3.css" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-dark bg-primary mb-3">
+      <div class="container">
+        <a href="#" class="navbar-brand"
+          >Assignment 3: Microservices and Node.js</a
+        >
+      </div>
+    </nav>
+    <div id="serviceCards">
+      <div class="card mb-3" id="ohmsLawCalculator">
+        <h3 class="card-header">Ohm's Law Calculator</h3>
+        <div class="card-body">
+          <h5 class="card-title">V = IR</h5>
+          <h6 class="card-subtitle text-muted">
+            Enter two values, the third will be calculated.
+          </h6>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            Volts<input
+              class="form-control omhsLawInput"
+              type="number"
+              id="voltsInput"
+            />
+          </li>
+          <li class="list-group-item">
+            Ohms
+            <input
+              class="form-control omhsLawInput"
+              type="number"
+              id="ohmsInput"
+            />
+          </li>
+          <li class="list-group-item">
+            Amps
+            <input
+              class="form-control omhsLawInput"
+              type="number"
+              id="ampsInput"
+            />
+          </li>
+        </ul>
+        <div class="card-body">
+          <a href="#" class="card-link">Card link</a>
+          <a href="#" class="card-link">Another link</a>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <h3 class="card-header">Groups of Resistors</h3>
+        <div class="card-body">
+          <h5 class="card-title">
+            Calculates the equivalent resistance of a set of resistors grouped
+            in either parallel or series.
+          </h5>
+          <h6 class="card-subtitle text-muted">
+            Only calculates one group at a time.
+          </h6>
+        </div>
+        <div class="card-body">
+          <p class="card-text">
+            Some quick example text to build on the card title and make up the
+            bulk of the card's content.
+          </p>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Cras justo odio</li>
+          <li class="list-group-item">Dapibus ac facilisis in</li>
+          <li class="list-group-item">Vestibulum at eros</li>
+        </ul>
+        <div class="card-body">
+          <a href="#" class="card-link">Card link</a>
+          <a href="#" class="card-link">Another link</a>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <h3 class="card-header">Groups of Capacitors</h3>
+        <div class="card-body">
+          <h5 class="card-title">Special title treatment</h5>
+          <h6 class="card-subtitle text-muted">Support card subtitle</h6>
+        </div>
+        <div class="card-body">
+          <p class="card-text">
+            Some quick example text to build on the card title and make up the
+            bulk of the card's content.
+          </p>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Cras justo odio</li>
+          <li class="list-group-item">Dapibus ac facilisis in</li>
+          <li class="list-group-item">Vestibulum at eros</li>
+        </ul>
+        <div class="card-body">
+          <a href="#" class="card-link">Card link</a>
+          <a href="#" class="card-link">Another link</a>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <h3 class="card-header">Behavior of a Charging Capacitor</h3>
+        <div class="card-body">
+          <h5 class="card-title">
+            Calculates the charging behavior of a specified capacitor, at the
+            specified charging voltage, giving the charge in volts at the
+            requested timestap in seconds.
+          </h5>
+          <h6 class="card-subtitle text-muted">Support card subtitle</h6>
+        </div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="d-block user-select-none"
+          width="100%"
+          height="200"
+          aria-label="Placeholder: Image cap"
+          focusable="false"
+          role="img"
+          preserveAspectRatio="xMidYMid slice"
+          viewBox="0 0 318 180"
+          style="font-size: 1.125rem; text-anchor: middle"
+        >
+          <rect width="100%" height="100%" fill="#868e96"></rect>
+          <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image cap</text>
+        </svg>
+        <div class="card-body">
+          <p class="card-text">
+            Some quick example text to build on the card title and make up the
+            bulk of the card's content.
+          </p>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Cras justo odio</li>
+          <li class="list-group-item">Dapibus ac facilisis in</li>
+          <li class="list-group-item">Vestibulum at eros</li>
+        </ul>
+        <div class="card-body">
+          <a href="#" class="card-link">Card link</a>
+          <a href="#" class="card-link">Another link</a>
+        </div>
+      </div>
+    </div>
+    Placeholding.
+  </body>
+</html>
