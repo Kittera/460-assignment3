@@ -11,7 +11,6 @@ function capacitorCoulombsToVolts(capacitance, coulombs) {
 //ohm's Law calculator
 
 function ohmsLaw(volts, resistance, current) {
-  console.log([volts, resistance, current]);
   if (!volts && resistance && current) {
     return resistance * current;
   } else if (volts && !resistance && current) {
@@ -46,6 +45,7 @@ function groupResistorsCapacitors(values, isSeries = false) {
 //
 
 const api = require("express")();
+api.use(require("cors")());
 
 api.get("/assign3/api/RC/", (req, res) => {
   console.log(req.query);
@@ -56,7 +56,7 @@ api.get("/assign3/api/RC/", (req, res) => {
   seriesResistance = parseFloat(seriesResistance); // in ohms
   chargingVoltage = parseFloat(chargingVoltage); // in volts
   isCharging = "true" == isCharging.toLowerCase(); // best way I could come up with
-  
+
   const timeConstant = seriesResistance * capacitance; // in seconds
   reqTime = parseFloat(reqTime) || timeConstant; // in seconds
 
@@ -75,10 +75,16 @@ api.get("/assign3/api/RC/", (req, res) => {
   });
 });
 
+/**
+ * Implements the Ohm's Law Calculator microservice. NOT SANITARY.
+ */
 api.get("/assign3/api/ohmslaw/", (req, res) => {
-  console.log(req.query);
   let { volts, ohms, amps } = req.query;
-  let result = ohmsLaw((volts = volts), (resistance = ohms), (current = amps));
+  volts = parseFloat(volts);
+  ohms = parseFloat(ohms);
+  amps = parseFloat(amps);
+
+  let result = ohmsLaw(volts, ohms, amps);
   if (!volts) {
     res.json({ volts: result });
   } else if (!ohms) {
@@ -91,7 +97,6 @@ api.get("/assign3/api/ohmslaw/", (req, res) => {
 });
 
 api.get("/assign3/api/resistorgroups/", (req, res) => {
-  console.log(req.query);
   let { values, isSeries } = req.query;
   values = JSON.parse(values);
   if (values && isSeries) {
@@ -127,4 +132,4 @@ api.get("/assign3/api/inductorgroups/", (req, res) => {
   }
 });
 
-api.listen(process.env.PORT || 3001, () => console.log("Hi."));
+api.listen(process.env.PORT || 3001, () => console.log("E&M Calculator Backend running."));

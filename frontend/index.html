@@ -19,6 +19,7 @@
       integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
       crossorigin="anonymous"
     ></script>
+    <script type="text/javascript" src="/js/calculators.js"></script>
   </head>
   <body>
     <nav class="navbar navbar-dark bg-primary mb-3">
@@ -42,7 +43,7 @@
             Volts<input
               class="form-control omhsLawInput"
               type="number"
-              id="voltsInput"
+              id="olVoltsInput"
             />
           </li>
           <li class="list-group-item">
@@ -50,7 +51,7 @@
             <input
               class="form-control omhsLawInput"
               type="number"
-              id="ohmsInput"
+              id="olOhmsInput"
             />
           </li>
           <li class="list-group-item">
@@ -58,26 +59,32 @@
             <input
               class="form-control omhsLawInput"
               type="number"
-              id="ampsInput"
+              id="olAmpsInput"
             />
           </li>
         </ul>
         <div class="card-body">
-          <a href="#" class="card-link">Card link</a>
-          <a href="#" class="card-link">Another link</a>
+          <button class="btn btn-primary" id="ohmsLawGoBtn">Calculate</button>
+          <button class="btn btn-primary" id="ohmsLawRstBtn">Reset</button>
+        </div>
+        <div class="card-body">
+          <input
+            class="form-control"
+            id="ohmsLawResult"
+            type="text"
+            placeholder="Result goes here"
+            readonly=""
+          />
         </div>
       </div>
 
-      <div class="card mb-3">
+      <div class="card mb-3" id="resistorGroupCalculator">
         <h3 class="card-header">Groups of Resistors</h3>
         <div class="card-body">
-          <h5 class="card-title">
+          <p class="card-subtitle text-muted">
             Calculates the equivalent resistance of a set of resistors grouped
             in either parallel or series.
-          </h5>
-          <h6 class="card-subtitle text-muted">
-            Only calculates one group at a time.
-          </h6>
+          </p>
         </div>
         <div class="card-body">
           <p class="card-text">
@@ -96,11 +103,13 @@
         </div>
       </div>
 
-      <div class="card mb-3">
+      <div class="card mb-3" id="capacitorGroupCalculator">
         <h3 class="card-header">Groups of Capacitors</h3>
         <div class="card-body">
-          <h5 class="card-title">Special title treatment</h5>
-          <h6 class="card-subtitle text-muted">Support card subtitle</h6>
+          <p class="card-subtitle text-muted">
+            Calculates the equivalent resistance of a set of capacitors grouped
+            in either parallel or series.
+          </p>
         </div>
         <div class="card-body">
           <p class="card-text">
@@ -119,31 +128,15 @@
         </div>
       </div>
 
-      <div class="card mb-3">
+      <div class="card mb-3" id="capacitorChargingCalculator">
         <h3 class="card-header">Behavior of a Charging Capacitor</h3>
         <div class="card-body">
-          <h5 class="card-title">
+          <p class="card-subtitle text-muted">
             Calculates the charging behavior of a specified capacitor, at the
             specified charging voltage, giving the charge in volts at the
             requested timestap in seconds.
-          </h5>
-          <h6 class="card-subtitle text-muted">Support card subtitle</h6>
+          </p>
         </div>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="d-block user-select-none"
-          width="100%"
-          height="200"
-          aria-label="Placeholder: Image cap"
-          focusable="false"
-          role="img"
-          preserveAspectRatio="xMidYMid slice"
-          viewBox="0 0 318 180"
-          style="font-size: 1.125rem; text-anchor: middle"
-        >
-          <rect width="100%" height="100%" fill="#868e96"></rect>
-          <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image cap</text>
-        </svg>
         <div class="card-body">
           <p class="card-text">
             Some quick example text to build on the card title and make up the
@@ -161,6 +154,11 @@
         </div>
       </div>
     </div>
-    Placeholding.
+    <script type="text/javascript">
+      $(document).ready(async () => {
+        $("#ohmsLawRstBtn").click(() => resetOhmsLaw());
+        $("#ohmsLawGoBtn").click(async () => await execOhmsLaw());
+      });
+    </script>
   </body>
 </html>
