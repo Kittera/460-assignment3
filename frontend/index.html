@@ -20,6 +20,10 @@
       crossorigin="anonymous"
     ></script>
     <script type="text/javascript" src="/js/calculators.js"></script>
+
+    <!-- Thanks to Fred Wang on GitHub for the JS library that helped me generate MathML from LaTeX. -->
+    <script src="https://fred-wang.github.io/TeXZilla/TeXZilla-min.js"></script>
+    <script src="https://fred-wang.github.io/TeXZilla/examples/customElement.js"></script>
   </head>
   <body>
     <nav class="navbar navbar-dark bg-primary mb-3">
@@ -29,102 +33,290 @@
         >
       </div>
     </nav>
+    <div class="container">
+      <h3 class="text-info">Welcome.</h3>
+      <p class="text-muted">
+        This microservice demo was made by Kittera McCloud.
+      </p>
+      <p>
+        This is my first full-stack (front-end and back-end) RESTful API project. It uses
+        <span class="text-danger">NodeJS</span> and
+        <span class="text-primary">Express</span>.
+      </p>
+      <p>
+        For this learning process, I chose to theme my microservices around
+        various calculations one might need to do in the study of electricity
+        and magnetism in physics.
+      </p>
+      <p>
+        All inputs of this calculator expect input in whole units. "Whole units"
+        refers to the scale of the measurement, rather than a requirement for an
+        integer.<br />
+        For example, if you have 48 millivolts, convert it to 0.048 volts before
+        inputting.
+      </p>
+    </div>
     <div id="serviceCards">
       <div class="card mb-3" id="ohmsLawCalculator">
         <h3 class="card-header">Ohm's Law Calculator</h3>
         <div class="card-body">
-          <h5 class="card-title">V = IR</h5>
           <h6 class="card-subtitle text-muted">
             Enter two values, the third will be calculated.
           </h6>
-        </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">
-            Volts<input
-              class="form-control omhsLawInput"
-              type="number"
-              id="olVoltsInput"
-            />
-          </li>
-          <li class="list-group-item">
-            Ohms
-            <input
-              class="form-control omhsLawInput"
-              type="number"
-              id="olOhmsInput"
-            />
-          </li>
-          <li class="list-group-item">
-            Amps
-            <input
-              class="form-control omhsLawInput"
-              type="number"
-              id="olAmpsInput"
-            />
-          </li>
-        </ul>
-        <div class="card-body">
-          <button class="btn btn-primary" id="ohmsLawGoBtn">Calculate</button>
-          <button class="btn btn-primary" id="ohmsLawRstBtn">Reset</button>
-        </div>
-        <div class="card-body">
+          <form>
+            <fieldset>
+              <div class="form-group">
+                <label for="olVoltsInput" class="form-label mt-4"
+                  >Voltage</label
+                >
+                <input
+                  class="form-control"
+                  type="number"
+                  id="olVoltsInput"
+                  aria-describedby="olVoltsHelp"
+                  placeholder="Enter Voltage"
+                />
+                <small id="olVoltsHelp" class="form-text text-muted"
+                  >Input is expected in whole Volts.</small
+                >
+              </div>
+              <div class="form-group">
+                <label for="olOhmsInput" class="form-label mt-4"
+                  >Resistance in Ohms</label
+                >
+                <input
+                  class="form-control"
+                  type="number"
+                  id="olOhmsInput"
+                  aria-describedby="olOhmsHelp"
+                  placeholder="Enter Resistance"
+                />
+                <small id="olOhmsHelp" class="form-text text-muted"
+                  >Input is expected in whole Ohms.</small
+                >
+              </div>
+              <div class="form-group">
+                <label for="olAmpsInput" class="form-label mt-4"
+                  >Current in Amperes</label
+                >
+                <input
+                  class="form-control"
+                  type="number"
+                  id="olAmpsInput"
+                  aria-describedby="olAmpsHelp"
+                  placeholder="Enter Current"
+                />
+                <small id="olAmpsHelp" class="form-text text-muted"
+                  >Input is expected in whole Amps.</small
+                >
+              </div>
+            </fieldset>
+          </form>
+          <div class="card-body">
+            <button
+              class="btn btn-primary"
+              id="ohmsLawGoBtn"
+              onclick="execOhmsLaw()"
+            >
+              Calculate
+            </button>
+            <button
+              class="btn btn-primary"
+              id="ohmsLawRstBtn"
+              onclick="resetOhmsLawPanel()"
+            >
+              Reset
+            </button>
+          </div>
           <input
             class="form-control"
             id="ohmsLawResult"
             type="text"
-            placeholder="Result goes here"
+            placeholder="Ohm's Law Result"
             readonly=""
           />
         </div>
+        <div class="card-footer text-muted">V=IR</div>
       </div>
 
-      <div class="card mb-3" id="resistorGroupCalculator">
-        <h3 class="card-header">Groups of Resistors</h3>
+      <div class="card mb-3" id="componentGroupCalculator">
+        <h3 class="card-header">Groups of Resistors/Capacitors</h3>
         <div class="card-body">
           <p class="card-subtitle text-muted">
             Calculates the equivalent resistance of a set of resistors grouped
-            in either parallel or series.
+            in either parallel or series. This calculator also works for
+            inductors, except that with inductors, the results are reversed.
+            This calculator's "series" result is actually a "parallel" result
+            for inductors, and vice versa.
           </p>
-        </div>
-        <div class="card-body">
-          <p class="card-text">
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
+          <p class="card-body">
+            Enter a comma-separated list of values, then click either "parallel"
+            or "series" to calculate the equivalent resistance/capacitance of
+            that group.
           </p>
+          <input
+            class="form-control"
+            id="componentGroupValuesInput"
+            type="text"
+            placeholder="Enter component values"
+          />
+          <div class="card-body">
+            <button
+              onclick="execComponentGroup(isSeries=true)"
+              class="btn btn-primary"
+              id="compGrpSeriesBtn"
+            >
+              Series
+            </button>
+            <button
+              onclick="execComponentGroup(isSeries=false)"
+              class="btn btn-primary"
+              id="compGrpParallelBtn"
+            >
+              Parallel
+            </button>
+            <button
+              onclick="resetGroupPanel()"
+              class="btn btn-primary"
+              id="compGrpRstBtn"
+            >
+              Reset
+            </button>
+          </div>
+          <input
+            class="form-control"
+            id="componentGroupResult"
+            type="text"
+            placeholder="Equivalent Value Result"
+            readonly=""
+          />
         </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">Cras justo odio</li>
-          <li class="list-group-item">Dapibus ac facilisis in</li>
-          <li class="list-group-item">Vestibulum at eros</li>
-        </ul>
-        <div class="card-body">
-          <a href="#" class="card-link">Card link</a>
-          <a href="#" class="card-link">Another link</a>
+        <div class="card-footer">
+          <small
+            >Capacitors, Resistors in Series:<br />Inductors in Parallel:
+          </small>
+          <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <semantics>
+              <mrow>
+                <msub>
+                  <mi>X</mi> <mrow> <mi>e</mi> <mi>q</mi> </mrow>
+                </msub>
+                <mo>=</mo> <munder> <mo>∑</mo> <mi>i</mi> </munder>
+                <msub> <mi>X</mi> <mi>i</mi> </msub>
+              </mrow>
+              <annotation encoding="TeX">X_{eq}=\sum_i X_i</annotation>
+            </semantics>
+          </math>
+          <br />
+          <small
+            >Capacitors, Resistors in Parallel:<br />Inductors in Series:
+          </small>
+          <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <semantics>
+              <mrow>
+                <mfrac>
+                  <mn>1</mn>
+                  <msub>
+                    <mi>X</mi> <mrow> <mi>e</mi> <mi>q</mi> </mrow>
+                  </msub>
+                </mfrac>
+                <mo>=</mo> <munder> <mo>∑</mo> <mi>i</mi> </munder>
+                <mfrac>
+                  <mn>1</mn> <msub> <mi>X</mi> <mi>i</mi> </msub>
+                </mfrac>
+              </mrow>
+              <annotation encoding="TeX"
+                >\frac{1}{X_{eq}}=\sum_i \frac{1}{X_i}
+              </annotation>
+            </semantics>
+          </math>
         </div>
       </div>
 
-      <div class="card mb-3" id="capacitorGroupCalculator">
-        <h3 class="card-header">Groups of Capacitors</h3>
+      <div class="card mb-3" id="capacitorEnergyCalculator">
+        <h3 class="card-header">Energy Stored in Capacitors</h3>
         <div class="card-body">
           <p class="card-subtitle text-muted">
-            Calculates the equivalent resistance of a set of capacitors grouped
-            in either parallel or series.
+            Calculates the amount of energy stored in a given capacitor charged
+            to a given voltage.
           </p>
+          <form>
+            <fieldset>
+              <div class="form-group">
+                <label for="capEnergyFaradsInput" class="form-label mt-4"
+                  >Capacitance in Farads</label
+                >
+                <input
+                  class="form-control"
+                  type="number"
+                  id="capEnergyFaradsInput"
+                  aria-describedby="faradHelp"
+                  placeholder="Enter Capacitance"
+                />
+                <small id="faradHelp" class="form-text text-muted"
+                  >If applicable, convert to whole Farads before
+                  inputting.</small
+                >
+              </div>
+              <div class="form-group">
+                <label for="capEnergyVoltsInput" class="form-label mt-4"
+                  >Charge on Capacitor in Volts</label
+                >
+                <input
+                  class="form-control"
+                  type="number"
+                  id="capEnergyVoltsInput"
+                  aria-describedby="voltsHelp"
+                  placeholder="Enter Charge in Volts"
+                />
+                <small id="voltsHelp" class="form-text text-muted"
+                  >If applicable, convert to whole Volts first.</small
+                >
+              </div>
+            </fieldset>
+          </form>
+          <div class="card-body">
+            <button onclick="execCapacitorEnergy()" class="btn btn-primary">
+              Calculate
+            </button>
+          </div>
+          <input
+            class="form-control"
+            id="capEnergyResult"
+            type="text"
+            placeholder="Stored Energy in Joules"
+            readonly=""
+          />
         </div>
-        <div class="card-body">
-          <p class="card-text">
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
-          </p>
-        </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">Cras justo odio</li>
-          <li class="list-group-item">Dapibus ac facilisis in</li>
-          <li class="list-group-item">Vestibulum at eros</li>
-        </ul>
-        <div class="card-body">
-          <a href="#" class="card-link">Card link</a>
-          <a href="#" class="card-link">Another link</a>
+        <div class="card-footer">
+          <small> Potential Energy of a Capacitor: </small>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <semantics>
+              <mrow>
+                <msub>
+                  <mi>U</mi>
+                  <mi>c</mi>
+                </msub>
+                <mo>=</mo>
+                <mfrac>
+                  <mrow>
+                    <mi>C</mi>
+                    <mi mathvariant="normal">(Δ</mi>
+                    <msup>
+                      <!-- <mo>(</mo> -->
+                      <mi>V)</mi>
+                      <!-- <mo>)</mo> -->
+                      <mn>2</mn>
+                    </msup>
+                  </mrow>
+                  <mn>2</mn>
+                </mfrac>
+              </mrow>
+              <annotation encoding="TeX"
+                >U_c= \frac{C\Delta V^2}{2}
+              </annotation>
+            </semantics>
+          </math>
         </div>
       </div>
 
@@ -136,29 +328,170 @@
             specified charging voltage, giving the charge in volts at the
             requested timestap in seconds.
           </p>
+          <form>
+            <fieldset>
+              <div class="form-group">
+                <label for="capEnergyFaradsInput" class="form-label mt-4"
+                  >Capacitance in Farads</label
+                >
+                <input
+                  class="form-control"
+                  type="number"
+                  id="capChargingFaradsInput"
+                  aria-describedby="capChargingFaradsHelp"
+                  placeholder="Enter Capacitance"
+                />
+                <small id="capChargingFaradsHelp" class="form-text text-muted"
+                  >How big is your capacitor?</small
+                >
+              </div>
+              <div class="form-group">
+                <label for="capChargingVoltsInput" class="form-label mt-4"
+                  >Supply Voltage</label
+                >
+                <input
+                  class="form-control"
+                  type="number"
+                  id="capChargingVoltsInput"
+                  aria-describedby="capChargingVoltsHelp"
+                  placeholder="Enter Supply Voltage"
+                />
+                <small id="capChargingVoltsHelp" class="form-text text-muted"
+                  >With what voltage are you charging the capacitor?</small
+                >
+              </div>
+              <div class="form-group">
+                <label for="capChargingResistanceInput" class="form-label mt-4"
+                  >Series Resistance in Ohms</label
+                >
+                <input
+                  class="form-control"
+                  type="number"
+                  id="capChargingResistanceInput"
+                  aria-describedby="voltsHelp"
+                  placeholder="Enter Resistance"
+                />
+                <small id="voltsHelp" class="form-text text-muted"
+                  >How large is the resistance in series with your
+                  capacitor?</small
+                >
+              </div>
+              <div class="form-group">
+                <label for="capChargingTimeInput" class="form-label mt-4"
+                  >Timestamp in Seconds</label
+                >
+                <input
+                  class="form-control"
+                  type="number"
+                  id="capChargingTimeInput"
+                  aria-describedby="voltsHelp"
+                  placeholder="Enter Timestamp"
+                />
+                <small id="voltsHelp" class="form-text text-muted"
+                  >At what time would you like to calculate the charge
+                  for?</small
+                >
+              </div>
+            </fieldset>
+          </form>
+          <div class="card-body">
+            <button onclick="execCapacitorCharging()" class="btn btn-primary">
+              Calculate
+            </button>
+            <button onclick="resetChargingPanel()" class="btn btn-primary">
+              Reset
+            </button>
+          </div>
+          <form>
+            <div class="form-group">
+              <label for="capChargingTimeConstantResult">Time Constant</label>
+              <input
+                class="form-control"
+                id="capChargingTimeConstantResult"
+                type="text"
+                placeholder="Calculated Time Constant"
+                aria-describedby="capChargingTimeConstantHelp"
+                readonly=""
+              />
+              <small
+                id="capChargingTimeConstantHelp"
+                class="form-text text-muted"
+                >This is the amount of time it will take the capacitor to go
+                from 0% to 66.67% charged, and then from 66.67% to 89%,
+                etc.</small
+              >
+            </div>
+            <div class="form-group">
+              <label for="capChargingReqTimeResult"
+                >Charge at Requested Timestamp</label
+              >
+              <input
+                class="form-control"
+                id="capChargingReqTimeResult"
+                type="text"
+                placeholder="Charge At Timestamp"
+                aria-describedby="capChargingReqTimeHelp"
+                readonly=""
+              />
+              <small id="capChargingReqTimeHelp" class="form-text text-muted"
+                >The capacitor will be charged up to this voltage at the
+                timestamp you entered.</small
+              >
+            </div>
+            <div class="form-group">
+              <label for="capChargingNomTimeResult">Time to Full Charge</label>
+              <input
+                class="form-control"
+                id="capChargingNomTimeResult"
+                type="text"
+                placeholder="Charge At Timestamp"
+                aria-describedby="capChargingNomTimeHelp"
+                readonly=""
+              />
+              <small id="capChargingNomTimeHelp" class="form-text text-muted"
+                >This is the amount of time in seconds that the capacitor will
+                require to become "mostly charged." Capacitors almost never
+                reach their maximum capacity, especially in electronics that
+                have been designed properly.</small
+              >
+            </div>
+          </form>
         </div>
-        <div class="card-body">
-          <p class="card-text">
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
-          </p>
-        </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">Cras justo odio</li>
-          <li class="list-group-item">Dapibus ac facilisis in</li>
-          <li class="list-group-item">Vestibulum at eros</li>
-        </ul>
-        <div class="card-body">
-          <a href="#" class="card-link">Card link</a>
-          <a href="#" class="card-link">Another link</a>
+        <div class="card-footer">
+          <small>Capacitor Charging Function: </small>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <semantics>
+              <mrow>
+                <mi>Q</mi>
+                <mo stretchy="false">(</mo>
+                <mi>t</mi>
+                <mo stretchy="false">)</mo>
+                <mo>=</mo>
+                <msub>
+                  <mi>Q</mi>
+                  <mi>f</mi>
+                </msub>
+                <mrow>
+                  <mo>(</mo>
+                  <mrow>
+                    <mn>1</mn> <mo>−</mo>
+                    <msup>
+                      <mi>e</mi>
+                      <mfrac>
+                        <mrow> <mo>−</mo> <mi>t</mi> </mrow> <mi>τ</mi>
+                      </mfrac>
+                    </msup>
+                  </mrow>
+                  <mo>)</mo>
+                </mrow>
+              </mrow>
+              <annotation encoding="TeX"
+                >Q(t) = Q_f\left(1-e^{\frac{-t}{\tau}}\right)
+              </annotation>
+            </semantics>
+          </math>
         </div>
       </div>
     </div>
-    <script type="text/javascript">
-      $(document).ready(async () => {
-        $("#ohmsLawRstBtn").click(() => resetOhmsLaw());
-        $("#ohmsLawGoBtn").click(async () => await execOhmsLaw());
-      });
-    </script>
   </body>
 </html>

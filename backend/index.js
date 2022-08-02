@@ -1,12 +1,16 @@
-// Q = CV
-const capacitorVoltsToCoulombs = (capacitance, volts) => {
-  capacitance * volts;
-};
+// regex to help with input validation for comma separated values
+const csvArrRGX = /^\[?[0-9]+(,[0-9]+)*\[?$/;
 
-// V = Q/C
-function capacitorCoulombsToVolts(capacitance, coulombs) {
-  return coulombs / capacitance;
-}
+//regex to help validate decimal numbers
+const decNumRGX = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
+
+//
+//
+//
+// Library functions for calculator
+//
+//
+//
 
 //ohm's Law calculator
 
@@ -23,17 +27,15 @@ function ohmsLaw(volts, resistance, current) {
 //resistor/capacitor grouping calculator
 
 function groupResistorsCapacitors(values, isSeries = false) {
-  isSeries = "true" == isSeries.toLowerCase();
+  isSeries = "true" == isSeries.toLowerCase() || isSeries == true;
   let sum = 0;
-  console.log(values);
   values.forEach((value) => {
     if (isSeries) {
-      sum += value;
+      sum += parseFloat(value);
     } else {
-      sum += 1 / value;
+      sum += 1 / parseFloat(value);
     }
   });
-  console.log(`sum=${sum}`);
   return isSeries ? sum : 1 / sum;
 }
 
@@ -48,14 +50,13 @@ const api = require("express")();
 api.use(require("cors")());
 
 api.get("/assign3/api/RC/", (req, res) => {
-  console.log(req.query);
   let { capacitance, seriesResistance, isCharging, chargingVoltage, reqTime } =
     req.query;
   // parse input into numbers to work with
   capacitance = parseFloat(capacitance); // in farads
   seriesResistance = parseFloat(seriesResistance); // in ohms
   chargingVoltage = parseFloat(chargingVoltage); // in volts
-  isCharging = "true" == isCharging.toLowerCase(); // best way I could come up with
+  isCharging = "true" == isCharging.toLowerCase() || isCharging == true; // best way I could come up with
 
   const timeConstant = seriesResistance * capacitance; // in seconds
   reqTime = parseFloat(reqTime) || timeConstant; // in seconds
@@ -63,15 +64,15 @@ api.get("/assign3/api/RC/", (req, res) => {
   // capacitor discharging or charging? that affects the equation.
   function capFunc(time) {
     let factor = Math.pow(Math.E, -(time / timeConstant));
-    return chargingVoltage * (isCharging ? 1 - factor : factor); // in coulombs
+    return chargingVoltage * capacitance * (isCharging ? 1 - factor : factor); // in coulombs
   }
+  let reqTimeChargeResultCoulombs = capFunc(reqTime);
+  let reqTimeChargeResultVolts = reqTimeChargeResultCoulombs / capacitance;
 
   res.json({
-    charge_after_req_time: capacitorCoulombsToVolts(
-      capacitance,
-      capFunc(reqTime)
-    ), // in volts
     cap_mostly_charged_at_time: 5 * timeConstant, // in seconds
+    time_constant: timeConstant, // also in seconds
+    charge_after_req_time_volts: reqTimeChargeResultVolts, // in volts
   });
 });
 
@@ -96,40 +97,34 @@ api.get("/assign3/api/ohmslaw/", (req, res) => {
   }
 });
 
-api.get("/assign3/api/resistorgroups/", (req, res) => {
+api.get("/assign3/api/componentgroups/", (req, res) => {
   let { values, isSeries } = req.query;
-  values = JSON.parse(values);
-  if (values && isSeries) {
-    res.json({ equiv_resistance: groupResistorsCapacitors(values, isSeries) });
-  } else {
-    res.json("error");
-  }
-});
-
-api.get("/assign3/api/capacitorgroups/", (req, res) => {
-  console.log(req.query);
-  let { values, isSeries } = req.query;
-  values = JSON.parse(values);
-  if (values && isSeries) {
-    res.json({ equiv_capacitance: groupResistorsCapacitors(values, isSeries) });
-  } else {
-    res.json("error");
-  }
-});
-
-api.get("/assign3/api/inductorgroups/", (req, res) => {
-  console.log(req.query);
-  let { values, isSeries } = req.query;
-  values = JSON.parse(values);
-  isSeries = "true" == isSeries.toLowerCase();
-
-  if (values && isSeries) {
+  if (values && isSeries && csvArrRGX.test(values)) {
+    values = values.split(",");
     res.json({
-      equiv_capacitance: groupResistorsCapacitors(values, !isSeries),
+      equiv_value: groupResistorsCapacitors(values, isSeries),
     });
   } else {
     res.json("error");
   }
 });
 
-api.listen(process.env.PORT || 3001, () => console.log("E&M Calculator Backend running."));
+api.get("/assign3/api/capacitorenergy/", (req, res) => {
+  let { capacitance, chargeVoltage } = req.query;
+  if (
+    capacitance &&
+    chargeVoltage &&
+    decNumRGX.test(capacitance) &&
+    decNumRGX.test(chargeVoltage)
+  ) {
+    res.json({
+      stored_energy: (capacitance * chargeVoltage * chargeVoltage) / 2.0, // 1/2 (C(V)^2)
+    });
+  } else {
+    res.json("error");
+  }
+});
+
+api.listen(process.env.PORT || 3001, () =>
+  console.log("E&M Calculator Backend running.")
+);
